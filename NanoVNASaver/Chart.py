@@ -47,6 +47,18 @@ class Chart(QtWidgets.QWidget):
         super().__init__()
         self.name = name
 
+    def _drawBands(self, qp : QtGui.QPainter):
+        
+        fspan = self.fstop - self.fstart
+        f_px = self.chartWidth/fspan
+        
+        qp.setPen(QtGui.QPen(QtGui.QColor(125, 125, 125, 32)))
+        qp.setBrush(QtGui.QColor(125, 125, 125, 32))
+        for m_start,m_stop  in identifica(self.fstart, self.fstop):
+            x = self.leftMargin +   (m_start - self.fstart)* f_px
+            y =  (m_stop - m_start)* f_px
+            qp.drawRect(x, 30, y, self.chartHeight-10)
+            
     def setSweepColor(self, color : QtGui.QColor):
         self.sweepColor = color
         self.update()
@@ -337,16 +349,7 @@ class VSWRChart(Chart):
         self.drawValues(qp)
         qp.end()
 
-    def _drawBands(self, qp,fstart,fstop,fspan):
-
-        f_px = self.chartWidth/fspan
-        
-        qp.setPen(QtGui.QPen(QtGui.QColor(125, 125, 125, 32)))
-        qp.setBrush(QtGui.QColor(125, 125, 125, 32))
-        for m_start,m_stop  in identifica(fstart,fstop):
-            x = self.leftMargin +   (m_start - self.fstart)* f_px
-            y =  (m_stop - m_start)* f_px
-            qp.drawRect(x, 30, y, self.chartHeight-10)
+    
             
     def drawChart(self, qp: QtGui.QPainter):
         qp.setPen(QtGui.QPen(self.textColor))
@@ -417,7 +420,7 @@ class VSWRChart(Chart):
             qp.setPen(self.textColor)
             qp.drawText(x-20, 20+self.chartHeight+15, Chart.shortenFrequency(round(fspan/ticks*(i+1) + fstart)))
         
-        self._drawBands(qp,fstart,fstop,fspan)
+        self._drawBands(qp)
         
         qp.setPen(pen)
         for i in range(len(self.data)):
@@ -871,6 +874,8 @@ class LogMagChart(Chart):
             qp.setPen(self.textColor)
             qp.drawText(x-20, 20+self.chartHeight+15, LogMagChart.shortenFrequency(round(fspan/ticks*(i+1) + fstart)))
 
+        self._drawBands(qp)
+        
         qp.setPen(pen)
         for i in range(len(self.data)):
             logmag = self.logMag(self.data[i])
@@ -1046,6 +1051,8 @@ class QualityFactorChart(Chart):
             qp.setPen(self.textColor)
             qp.drawText(x-20, 20+self.chartHeight+15, Chart.shortenFrequency(round(fspan/ticks*(i+1) + fstart)))
 
+        self._drawBands(qp)
+        
         qp.setPen(pen)
         for i in range(len(self.data)):
             Q = NanoVNASaver.qualifyFactor(self.data[i])
