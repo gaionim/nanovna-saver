@@ -50,14 +50,15 @@ class Chart(QtWidgets.QWidget):
     def _drawBands(self, qp : QtGui.QPainter):
         
         fspan = self.fstop - self.fstart
-        f_px = self.chartWidth/fspan
-        
-        qp.setPen(QtGui.QPen(QtGui.QColor(125, 125, 125, 32)))
-        qp.setBrush(QtGui.QColor(125, 125, 125, 32))
-        for m_start,m_stop  in identifica(self.fstart, self.fstop):
-            x = self.leftMargin +   (m_start - self.fstart)* f_px
-            y =  (m_stop - m_start)* f_px
-            qp.drawRect(x, 30, y, self.chartHeight-10)
+        if fspan >0:
+            f_px = self.chartWidth/fspan
+            
+            qp.setPen(QtGui.QPen(QtGui.QColor(125, 125, 125, 32)))
+            qp.setBrush(QtGui.QColor(125, 125, 125, 32))
+            for m_start,m_stop  in identifica(self.fstart, self.fstop):
+                x = self.leftMargin +   (m_start - self.fstart)* f_px
+                y =  (m_stop - m_start)* f_px
+                qp.drawRect(x, 30, y, self.chartHeight-10)
             
     def setSweepColor(self, color : QtGui.QColor):
         self.sweepColor = color
